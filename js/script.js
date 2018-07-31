@@ -1,4 +1,5 @@
-;(function() {
+;(function($) {
+  'use strict';
 
   // ========== Form references ================
 
@@ -331,4 +332,4 @@
   designHandler();
   paymentHandler();
 
-})();
+}($));
