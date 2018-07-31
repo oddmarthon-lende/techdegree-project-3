@@ -1,6 +1,10 @@
 ;(function($) {
   'use strict';
 
+  const colorOptions = (start, end, text) => {
+    return $color.find('option').slice(start, end).each((_, opt) => $(opt).text($(opt).text().replace(text, '').trim()));
+  };
+
   // ========== Form references ================
 
   const $name        = $('#name');
@@ -25,9 +29,11 @@
   const $credit_card = $('#credit-card');
   const $colorsJsPuns = $('#colors-js-puns');
   const colors       = {
-    a: $color.find('option').slice(0,3).each((_, opt) => $(opt).text($(opt).text().replace('(JS Puns shirt only)', '').trim())),
-    b: $color.find('option').slice(3,7).each((_, opt) => $(opt).text($(opt).text().replace('(I ♥ JS shirt only)', '').trim()))
+    a: colorOptions(0, 3, '(JS Puns shirt only)'),
+    b: colorOptions(3, 7, '(I ♥ JS shirt only)')
   };
+
+
 
   // =========== Event Handlers ================
 
@@ -150,8 +156,8 @@
     $('.form-error').removeClass('form-error');
 
     // Validate the name field
-    if(name.length === 0) {
-      errors.push('Please provide a name');
+    if(name.length === 0 || /[0-9]/gi.test(name)) {
+      errors.push('Please provide a valid name');
       $($name[0].labels).addClass('form-error').append(`<span class="form-error-text">(${errors[errors.length-1]})</span>`);
       $name.addClass("form-error");
     }
@@ -193,21 +199,23 @@
     // Validate the credit card fields if credit card payment method is selected
     if($payment.prop('selectedIndex') === 1) {
 
+      const checkNumeric = /[^0-9]/gi;
+
       // Validate the credit card number
-      if(isNaN(parseInt(ccNum)) || !(ccNum.length >= 13 && ccNum.length <= 16)) {
+      if(checkNumeric.test(ccNum) || !(ccNum.length >= 13 && ccNum.length <= 16)) {
 
         if(!ccNum.length) {
           errors.push('Please enter a credit card number');
         }
         else
-          errors.push('Please enter a credit card number that is between 13 and 16 digits long');
+          errors.push('Please enter a credit card number that<br /> is between 13 and 16 digits long');
 
         $($cc_num[0].labels).addClass('form-error');
         $cc_num.addClass("form-error");
       }
 
       // Validate the zip code
-      if(isNaN(parseInt(zip)) || zip.length != 5) {
+      if(checkNumeric.test(zip) || zip.length != 5) {
 
         if(!zip.length) {
           errors.push('Please enter a valid zip code number');
@@ -221,7 +229,7 @@
       }
 
       // Validate the CVV code
-      if(isNaN(parseInt(cvv)) || cvv.length != 3) {
+      if(checkNumeric.test(cvv) || cvv.length != 3) {
 
         if(!ccNum.length) {
           errors.push('Please enter a valid CVV number');
